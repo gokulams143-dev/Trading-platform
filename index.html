@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+
 <title>Trading Platform</title>
 
-<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+<script src="https://s3.tradingview.com/tv.js"></script>
 
 </head>
 
@@ -11,36 +13,111 @@
 
 <h2>Trading Platform Prototype</h2>
 
-<div id="chart" style="width:900px;height:500px;"></div>
+<div id="chart"></div>
+
+<br>
+
+<button onclick="buy()">BUY</button>
+<button onclick="sell()">SELL</button>
+
+<h3>Position</h3>
+
+<div id="position">No open trade</div>
 
 <script>
 
-const chart = LightweightCharts.createChart(document.getElementById('chart'), {
-    width: 900,
-    height: 500
+let currentPrice = 0;
+let position = null;
+
+new TradingView.widget({
+  "container_id": "chart",
+  "symbol": "BINANCE:BTCUSDT",
+  "interval": "1",
+  "width": "100%",
+  "height": "500"
 });
 
-const candleSeries = chart.addCandlestickSeries();
 
-fetch("https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m")
+const ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
 
-.then(response => response.json())
+ws.onmessage = function(event){
 
-.then(data => {
+const data = JSON.parse(event.data);
 
-const candles = data.map(c => ({
-time: c[0] / 1000,
-open: parseFloat(c[1]),
-high: parseFloat(c[2]),
-low: parseFloat(c[3]),
-close: parseFloat(c[4])
-}));
+currentPrice = parseFloat(data.p);
 
-candleSeries.setData(candles);
+updatePnL();
 
-});
+};
+
+
+function buy(){
+
+position = {
+side:"BUY",
+entry:currentPrice
+};
+
+updatePosition();
+
+}
+
+
+function sell(){
+
+position = {
+side:"SELL",
+entry:currentPrice
+};
+
+updatePosition();
+
+}
+
+
+function updatePosition(){
+
+if(!position){
+
+document.getElementById("position").innerHTML="No open trade";
+
+return;
+
+}
+
+document.getElementById("position").innerHTML=
+"Side: "+position.side+
+"<br>Entry: "+position.entry;
+
+}
+
+
+function updatePnL(){
+
+if(!position) return;
+
+let pnl=0;
+
+if(position.side==="BUY"){
+
+pnl=currentPrice-position.entry;
+
+}else{
+
+pnl=position.entry-currentPrice;
+
+}
+
+document.getElementById("position").innerHTML=
+"Side: "+position.side+
+"<br>Entry: "+position.entry+
+"<br>Price: "+currentPrice+
+"<br>PnL: "+pnl.toFixed(2);
+
+}
 
 </script>
 
 </body>
+
 </html>
