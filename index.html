@@ -20,6 +20,25 @@
 <button onclick="buy()">BUY</button>
 <button onclick="sell()">SELL</button>
 
+  <br><br>
+
+Lot Size:
+<input id="size" value="1">
+
+<br><br>
+
+Stop Loss:
+<input id="sl">
+
+<br><br>
+
+Take Profit:
+<input id="tp">
+
+<br><br>
+
+<button onclick="closeTrade()">Close Trade</button>
+
 <h3>Position</h3>
 
 <div id="position">No open trade</div>
@@ -55,7 +74,10 @@ function buy(){
 
 position = {
 side:"BUY",
-entry:currentPrice
+entry:currentPrice,
+size:parseFloat(document.getElementById("size").value),
+sl:parseFloat(document.getElementById("sl").value),
+tp:parseFloat(document.getElementById("tp").value)
 };
 
 updatePosition();
@@ -67,7 +89,10 @@ function sell(){
 
 position = {
 side:"SELL",
-entry:currentPrice
+entry:currentPrice,
+size:parseFloat(document.getElementById("size").value),
+sl:parseFloat(document.getElementById("sl").value),
+tp:parseFloat(document.getElementById("tp").value)
 };
 
 updatePosition();
@@ -113,6 +138,18 @@ document.getElementById("position").innerHTML=
 "<br>Entry: "+position.entry+
 "<br>Price: "+currentPrice+
 "<br>PnL: "+pnl.toFixed(2);
+
+}
+
+function closeTrade(){
+
+if(!position) return;
+
+alert("Trade closed");
+
+position=null;
+
+updatePosition();
 
 }
 
