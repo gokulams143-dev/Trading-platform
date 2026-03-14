@@ -1,1 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Trading Platform</title>
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+</head>
 
+<body>
+
+<h2>Trading Platform Prototype</h2>
+
+<div id="chart" style="width:900px;height:500px;"></div>
+
+<script>
+
+const chart = LightweightCharts.createChart(document.getElementById('chart'), {
+    width: 900,
+    height: 500
+});
+
+const candleSeries = chart.addCandlestickSeries();
+
+candleSeries.setData([
+  { time: '2024-01-01', open: 50000, high: 50500, low: 49800, close: 50300 },
+  { time: '2024-01-02', open: 50300, high: 50800, low: 50000, close: 50600 }
+]);
+
+</script>
+
+</body>
+</html>
