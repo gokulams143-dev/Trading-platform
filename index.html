@@ -1,3 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Trading Platform</title>
+
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+
+</head>
+
+<body>
+
+<h2>Trading Platform Prototype</h2>
+
+<div id="chart" style="width:900px;height:500px;"></div>
+
 <script>
 
 const chart = LightweightCharts.createChart(document.getElementById('chart'), {
@@ -9,7 +24,7 @@ const candleSeries = chart.addCandlestickSeries();
 
 fetch("https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m")
 
-.then(res => res.json())
+.then(response => response.json())
 
 .then(data => {
 
@@ -26,3 +41,6 @@ candleSeries.setData(candles);
 });
 
 </script>
+
+</body>
+</html>
