@@ -7,41 +7,138 @@
 
 <script src="https://s3.tradingview.com/tv.js"></script>
 
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#0b1220;
+color:white;
+}
+
+.topbar{
+height:50px;
+background:#111827;
+display:flex;
+align-items:center;
+padding:0 20px;
+font-size:14px;
+}
+
+.main{
+display:grid;
+grid-template-columns:250px 1fr 300px;
+height:calc(100vh - 50px);
+}
+
+.market{
+background:#111827;
+padding:10px;
+}
+
+.chart{
+background:black;
+}
+
+.trade{
+background:#111827;
+padding:15px;
+}
+
+.bottom{
+height:200px;
+background:#111827;
+padding:10px;
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:5px;
+font-size:16px;
+cursor:pointer;
+}
+
+.buy{
+background:#16a34a;
+}
+
+.sell{
+background:#dc2626;
+}
+
+input{
+width:100%;
+padding:8px;
+margin-top:5px;
+border:none;
+border-radius:5px;
+}
+
+</style>
+
 </head>
 
 <body>
 
-<h2>Trading Platform Prototype</h2>
+<div class="topbar">
+BTCUSDT | Balance: $10000 | Equity: $10000 | PnL: $0
+</div>
+
+<div class="main">
+
+<div class="market">
+
+<h3>Market Watch</h3>
+
+<p>BTCUSDT</p>
+<p>ETHUSDT</p>
+<p>SOLUSDT</p>
+
+</div>
+
+<div class="chart">
 
 <div id="chart"></div>
 
-<br>
+</div>
 
-<button onclick="buy()">BUY</button>
-<button onclick="sell()">SELL</button>
+<div class="trade">
 
-  <br><br>
+<h3>Trade</h3>
 
-Lot Size:
+Lot Size
 <input id="size" value="1">
 
-<br><br>
-
-Stop Loss:
+Stop Loss
 <input id="sl">
 
-<br><br>
-
-Take Profit:
+Take Profit
 <input id="tp">
 
-<br><br>
+<button class="buy" onclick="buy()">BUY</button>
+
+<button class="sell" onclick="sell()">SELL</button>
 
 <button onclick="closeTrade()">Close Trade</button>
 
 <h3>Position</h3>
 
 <div id="position">No open trade</div>
+
+</div>
+
+</div>
+
+<div class="bottom">
+
+<h3>Positions</h3>
+
+Symbol | Entry | Size | PnL
+
+</div>
 
 <script>
 
@@ -53,9 +150,8 @@ new TradingView.widget({
   "symbol": "BINANCE:BTCUSDT",
   "interval": "1",
   "width": "100%",
-  "height": "500"
+  "height": "600"
 });
-
 
 const ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
 
@@ -68,7 +164,6 @@ currentPrice = parseFloat(data.p);
 updatePnL();
 
 };
-
 
 function buy(){
 
@@ -84,7 +179,6 @@ updatePosition();
 
 }
 
-
 function sell(){
 
 position = {
@@ -98,7 +192,6 @@ tp:parseFloat(document.getElementById("tp").value)
 updatePosition();
 
 }
-
 
 function updatePosition(){
 
@@ -116,7 +209,6 @@ document.getElementById("position").innerHTML=
 
 }
 
-
 function updatePnL(){
 
 if(!position) return;
@@ -127,9 +219,15 @@ if(position.side==="BUY"){
 
 pnl=currentPrice-position.entry;
 
+if(position.sl && currentPrice<=position.sl) closeTrade();
+if(position.tp && currentPrice>=position.tp) closeTrade();
+
 }else{
 
 pnl=position.entry-currentPrice;
+
+if(position.sl && currentPrice>=position.sl) closeTrade();
+if(position.tp && currentPrice<=position.tp) closeTrade();
 
 }
 
